@@ -1,0 +1,17 @@
+- hosts: localhost
+  connection: local
+  vars:
+    ip_address: "{{lookup('file', 'ip_address.txt').split('\n') }}"
+
+  tasks:
+    - debug: var=ip_address
+    - template: src=rules.j2 dest=/tmp/rules.yml
+    - include_vars: /tmp/rules.yml
+
+    - name: example ec2 group
+      ec2_group:
+        name: example
+        description: an example EC2 group
+        vpc_id: vpc-123456
+        region: us-east-1
+        rules: "{{ rules }}"
